@@ -11,7 +11,7 @@ return [
 
     'allowed_origins_patterns' => [],
 
-    'allowed_methods' => ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'], // Métodos comunes para APIs REST
+    'allowed_methods' => ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE', 'PATCH'], // Métodos comunes para APIs REST
 
     'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With'], // Cabeceras comunes
 
