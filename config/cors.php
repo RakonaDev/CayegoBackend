@@ -6,7 +6,9 @@ return [
 
     'allowed_origins' => [
         'https://mi-frontend.com', // Reemplaza con el dominio de tu frontend de producción
-        'http://localhost:5173',   // Para desarrollo local (si lo necesitas)
+        'http://localhost:5174',
+        'http://localhost:5173',
+        'https://avances.logosperu.com'   // Para desarrollo local (si lo necesitas)
     ],
 
     'allowed_origins_patterns' => [],

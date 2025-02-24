@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,21 +13,21 @@ class ServiceController extends Controller
   public function index()
   {
     $service = Service::all();
-    return response()->json($service);
+    return response()->json(['services' => $service]);
   }
 
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
-      'name' => 'required|string|max:255',
-      'name_en' => 'required|string|max:255',
-      'description' => 'required|string|max:255',
-      'description_en' => 'required|string|max:255',
+      'name' => 'required|string|',
+      'name_en' => 'required|string|',
+      'description' => 'required|string|',
+      'description_en' => 'required|string|',
       'image' =>  'required|image|mimes:jpeg,png,jpg,avif,webp|max:5048'
     ]);
 
     if ($validator->fails()) {
-      return response()->json($validator->errors());
+      return response()->json($validator->errors(), 422);
     }
     $image = $request->file('image');
     $imageName = time() . '.' . $image->getClientOriginalName();
@@ -35,7 +36,9 @@ class ServiceController extends Controller
 
     $service = Service::create([
       'name' => $request->name,
+      'name_en' => $request->name_en,
       'description' => $request->description,
+      'description_en' => $request->description_en,
       'url_image' => $imageUrl
     ]);
 
@@ -55,21 +58,20 @@ class ServiceController extends Controller
 
     $validator = Validator::make($request->all(), [
       'name' => 'required|string|max:255',
-      /*'name_en' => 'required|string|max:255',*/
+      'name_en' => 'required|string|max:255',
       'description' => 'required|string|max:255',
-      /*'description_en' => 'required|string|max:255',*/
-      'image' => 'nullable|image|mimes:jpeg,png,jpg,avif,webp|max:5048', // 'nullable' para permitir la edición sin cambiar la imagen
+      'description_en' => 'required|string|max:255',
+      'image' => 'nullable|image|mimes:jpeg,png,jpg,avif,webp|max:5048',
     ]);
 
     if ($validator->fails()) {
       return response()->json($validator->errors(), 422);
     }
 
-    $service->name = $request->name;
-    $service->description = $request->description;
+    $service->name = $request->input('name');
+    $service->description = $request->input('description');
 
     if ($request->hasFile('image')) {
-      // Elimina la imagen anterior si existe
       if ($service->image) {
         Storage::delete(str_replace(Storage::url(''), '', $service->image));
       }
@@ -106,15 +108,15 @@ class ServiceController extends Controller
 
     return response()->json(['message' => 'Servicio eliminado con éxito', 'service' => $service], 200);
   }
-  public function show ($id, $lang) {
+  public function show($id, $lang = 'es')
+  {
     if ($lang == 'en') {
       $colummns = [
         'name_en',
         'description_en',
         'url_image'
       ];
-    }
-    else {
+    } else {
       $colummns = [
         'name',
         'description',
@@ -132,8 +134,9 @@ class ServiceController extends Controller
     ]);
   }
 
-  public function paginateServices ($limit, $page) {
-    $services = Service::paginate($limit, ['*'],'page',$page);
+  public function paginateServices($limit, $page)
+  {
+    $services = Service::paginate($limit, ['*'], 'page', $page);
     $response = [
       'services' => $services->items(),
       'currentPage' => $services->currentPage(),

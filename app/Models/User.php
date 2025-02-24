@@ -20,8 +20,17 @@ class User extends Authenticatable implements JWTSubject
    */
   protected $fillable = [
     'name',
+    'photo_driver',
+    'photo_vehicle',
+    'ruc',
+    'phone',
+    'address',
+    'dni',
+    'date_afiliate',
     'email',
     'password',
+    'role',
+    'account_bank'
   ];
 
   /**
@@ -42,18 +51,28 @@ class User extends Authenticatable implements JWTSubject
   protected $casts = [
     'email_verified_at' => 'datetime',
   ];
-  public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
 
-    /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
-     */
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
+  public function isAdmin()
+  {
+    return $this->role === 'admin';
+  }
+
+  public function isDriver()
+  {
+    return $this->role === 'conductor';
+  }
+  public function getJWTIdentifier()
+  {
+    return $this->getKey();
+  }
+
+  /**
+   * Return a key value array, containing any custom claims to be added to the JWT.
+   *
+   * @return array
+   */
+  public function getJWTCustomClaims()
+  {
+    return [];
+  }
 }

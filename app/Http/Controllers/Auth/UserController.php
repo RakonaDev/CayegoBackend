@@ -19,15 +19,15 @@ class UserController extends Controller
       'email' => 'required|string|email|max:100|unique:users',
       'password' => 'required|string|min:6',
     ]);
-    
+
     if ($validator->fails()) {
       return response()->json($validator->errors(), 400);
     }
-    $data = $validator->validated();
+    $request = $validator->validated();
     $user = User::create([
-      'name' => $data['name'],
-      'email' => $data['email'],
-      'password' => Hash::make($data['password']),
+      'name' => $request['name'],
+      'email' => $request['email'],
+      'password' => Hash::make($request['password']),
     ]);
 
     $token = JWTAuth::fromUser($user);
@@ -71,5 +71,25 @@ class UserController extends Controller
   {
     JWTAuth::invalidate(JWTAuth::getToken());
     return response()->json(['message' => 'Successfully logged out']);
+  }
+
+  function crearAdministrador(Request $request)
+  {
+    $validator = Validator::make($request->all(), [
+      'name' => 'required|string|max:255',
+      'email' => 'required|string|email|unique:users',
+      'password' => 'required|string|min:8',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors(), 422);
+    }
+
+    return User::create([
+      'name' => $request['name'],
+      'email' => $request['email'],
+      'password' => Hash::make($request['password']),
+      'role' => 'admin',
+    ]);
   }
 }

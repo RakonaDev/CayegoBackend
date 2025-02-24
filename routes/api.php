@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\DriverController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\ServiceController;
 use Illuminate\Http\Request;
@@ -24,15 +25,28 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('reservation', [MailController::class, 'sendReservation']);
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
+Route::get('/services', [ServiceController::class, 'index']);
+// Route::post('/crearAdmin', [UserController::class, 'crearAdministrador']);
 
 Route::middleware('jwt')->group(function () {
   Route::get('user', [UserController::class, 'user']); // Ruta protegida por middleware
   Route::post('logout', [UserController::class, 'logout']);
-  Route::get('/services/{limit}/{page}', [ServiceController::class, 'paginateServices']);
   /*
   Route::post('/services', [ServiceController::class, 'store']);
   Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
   Route::patch('services')
   */
-  Route::apiResource('services', ServiceController::class);
+  // Route::apiResource('services', ServiceController::class);
+  Route::middleware('admin')->group(function () {
+    Route::get('/services/{limit}/{page}', [ServiceController::class, 'paginateServices']);
+    Route::get('/services/{id}/{lang}', [ServiceController::class, 'show']);
+    Route::post('/services', [ServiceController::class, 'store']);
+    Route::post('/services/{id}', [ServiceController::class, 'update']);
+    Route::post('/deleteService/{id}', [ServiceController::class, 'destroy']);
+
+    Route::get('/drivers/{limit}/{page}', [DriverController::class, 'paginateConductores']);
+    Route::post('/drivers', [DriverController::class, 'store']);
+    Route::post('/drivers/{id}', [DriverController::class, 'update']);
+    Route::post('/deleteDriver/{id}', [DriverController::class, 'destroy']);
+  });
 });
