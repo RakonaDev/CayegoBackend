@@ -26,6 +26,7 @@ Route::post('reservation', [MailController::class, 'sendReservation']);
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
 Route::get('/services', [ServiceController::class, 'index']);
+Route::get('/services/{id}', [ServiceController::class, 'show']);
 // Route::post('/crearAdmin', [UserController::class, 'crearAdministrador']);
 
 Route::middleware('jwt')->group(function () {
@@ -39,7 +40,6 @@ Route::middleware('jwt')->group(function () {
   // Route::apiResource('services', ServiceController::class);
   Route::middleware('admin')->group(function () {
     Route::get('/services/{limit}/{page}', [ServiceController::class, 'paginateServices']);
-    Route::get('/services/{id}/{lang}', [ServiceController::class, 'show']);
     Route::post('/services', [ServiceController::class, 'store']);
     Route::post('/services/{id}', [ServiceController::class, 'update']);
     Route::post('/deleteService/{id}', [ServiceController::class, 'destroy']);
